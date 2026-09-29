@@ -1,0 +1,66 @@
+deployAs:
+  - name: enabler
+    applicationType: assets
+  - name: processor
+    applicationType: service
+    endpoint: /
+    scripts:
+      postDeploy: npm install && npm run connector:post-deploy
+      preUndeploy: npm install && npm run connector:pre-undeploy
+    configuration:
+      standardConfiguration:
+        - key: CTP_PROJECT_KEY
+          description: commercetools project key
+          required: true
+        - key: CTP_CLIENT_ID
+          description: API client ID with manage_payments, manage_orders, view_sessions, view_api_clients, manage_checkout_payment_intents, and introspect_oauth_tokens
+          required: true
+        - key: CTP_AUTH_URL
+          description: commercetools Auth URL
+          required: true
+          default: https://auth.australia-southeast1.gcp.commercetools.com
+        - key: CTP_API_URL
+          description: commercetools API URL
+          required: true
+          default: https://api.australia-southeast1.gcp.commercetools.com
+        - key: CTP_SESSION_URL
+          description: Checkout Session API URL
+          required: true
+          default: https://session.australia-southeast1.gcp.commercetools.com
+        - key: CTP_JWKS_URL
+          description: JSON Web Key Set URL used to validate Checkout sessions
+          required: true
+          default: https://mc-api.australia-southeast1.gcp.commercetools.com/.well-known/jwks.json
+        - key: CTP_JWT_ISSUER
+          description: JWT issuer used to validate Checkout sessions
+          required: true
+          default: https://mc-api.australia-southeast1.gcp.commercetools.com
+        - key: BRAINTREE_ENVIRONMENT
+          description: Braintree mode. sandbox or production.
+          required: true
+          default: sandbox
+        - key: BRAINTREE_MERCHANT_ID
+          description: Braintree merchant ID
+          required: true
+        - key: BRAINTREE_MERCHANT_ACCOUNT_ID
+          description: Braintree merchant account ID. Its currency must match the cart.
+          required: true
+      securedConfiguration:
+        - key: CTP_CLIENT_SECRET
+          description: commercetools API client secret
+          required: true
+        - key: BRAINTREE_PUBLIC_KEY
+          description: Braintree public key
+          required: true
+        - key: BRAINTREE_PRIVATE_KEY
+          description: Braintree private key
+          required: true
+inheritAs:
+  apiClient:
+    scopes:
+      - manage_payments
+      - manage_orders
+      - view_sessions
+      - view_api_clients
+      - manage_checkout_payment_intents
+      - introspect_oauth_tokens
