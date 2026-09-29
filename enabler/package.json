@@ -20,7 +20,7 @@
 		"braintree-web-drop-in": "^1.46.0",
 		"braintree-web": "^3.134.0",
 		"cookie": "^1.1.1",
-		"serve": "14.2.5"
+		"serve": "14.2.6"
 	},
 	"devDependencies": {
 		"@types/braintree-web": "^3.96.17",
@@ -32,10 +32,21 @@
 		"sass": "1.97.1",
 		"ts-jest": "^29.4.6",
 		"typescript": "5.9.3",
-		"vite": "7.3.0",
+		"vite": "7.3.6",
 		"vite-plugin-css-injected-by-js": "3.5.2"
 	},
 	"overrides": {
-		"path-to-regexp": "3.3.0"
+		"path-to-regexp": "3.3.0",
+		"brace-expansion": "2.1.7",
+		"browserslist": "4.29.2",
+		"handlebars": "4.7.9",
+		"immutable": "5.1.9",
+		"js-yaml": "4.3.2",
+		"minimatch": "9.0.9",
+		"nanoid": "3.3.19",
+		"picomatch": "4.0.7",
+		"postcss": "8.5.28",
+		"rollup": "4.63.5",
+		"shell-quote": "1.11.0"
 	}
 }
