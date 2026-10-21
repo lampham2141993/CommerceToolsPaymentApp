@@ -43,7 +43,7 @@ describe("mapCtTotalPriceToBraintreeAmount", () => {
 		expect(mapToBraintreeCreatePaymentRequest(cart, nonce)).toStrictEqual({
 			amount: "34.57",
 			options: {
-				submitForSettlement: false,
+				submitForSettlement: true,
 			},
 			paymentMethodNonce: "fake-nonce",
 		});
@@ -56,7 +56,7 @@ describe("mapCtTotalPriceToBraintreeAmount", () => {
 		expect(mapToBraintreeCreatePaymentRequest(cart, nonce)).toStrictEqual({
 			amount: "8000000",
 			options: {
-				submitForSettlement: false,
+				submitForSettlement: true,
 			},
 			paymentMethodNonce: "fake-nonce",
 		});
@@ -68,7 +68,7 @@ describe("mapCtTotalPriceToBraintreeAmount", () => {
 		expect(mapToBraintreeCreatePaymentRequest(cart, nonce)).toStrictEqual({
 			amount: "0.01",
 			options: {
-				submitForSettlement: false,
+				submitForSettlement: true,
 			},
 			paymentMethodNonce: "fake-nonce",
 		});
@@ -88,7 +88,7 @@ describe("mapCtTotalPriceToBraintreeAmount", () => {
 		expect(mapToBraintreeCreatePaymentRequest(cart, nonce)).toStrictEqual({
 			amount: "345.7",
 			options: {
-				submitForSettlement: false,
+				submitForSettlement: true,
 			},
 			paymentMethodNonce: "fake-nonce",
 		});
@@ -101,7 +101,7 @@ describe("mapCtTotalPriceToBraintreeAmount", () => {
 		expect(mapToBraintreeCreatePaymentRequest(cart, nonce)).toStrictEqual({
 			amount: "80000000",
 			options: {
-				submitForSettlement: false,
+				submitForSettlement: true,
 			},
 			paymentMethodNonce: "fake-nonce",
 		});
@@ -113,7 +113,7 @@ describe("mapCtTotalPriceToBraintreeAmount", () => {
 		expect(mapToBraintreeCreatePaymentRequest(cart, nonce)).toStrictEqual({
 			amount: "0.1",
 			options: {
-				submitForSettlement: false,
+				submitForSettlement: true,
 			},
 			paymentMethodNonce: "fake-nonce",
 		});

@@ -26,7 +26,7 @@ export class PayPal extends BaseComponent {
 		});
 		await this.paypalCheckoutInstance.loadPayPalSDK({
 			currency: this.currencyCode,
-			intent: "authorize",
+			intent: "capture",
 			vault: false,
 		});
 
@@ -45,7 +45,7 @@ export class PayPal extends BaseComponent {
 						flow: "checkout" as PayPalCheckoutCreatePaymentOptions["flow"],
 						amount: this.amount,
 						currency: this.currencyCode,
-						intent: "authorize" as PayPalCheckoutCreatePaymentOptions["intent"],
+						intent: "capture" as PayPalCheckoutCreatePaymentOptions["intent"],
 					});
 				},
 				onApprove: async (data) => {

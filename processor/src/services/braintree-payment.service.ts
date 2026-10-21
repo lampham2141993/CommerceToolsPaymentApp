@@ -26,7 +26,11 @@ import { PaymentModificationStatus, SupportedPaymentComponentsSchemaDTO } from "
 import { paymentSDK } from "../sdk/paymentSDK";
 import type { AmountSchemaDTO } from "../dtos/operation.dto";
 import { ErrorInvalidOperation, TransactionState } from "@commercetools/connect-payments-sdk";
-import { mapBraintreeToCtResultCode, mapCtPaymentAmountToBraintreeAmount } from "./mappers/braintree.mapper";
+import {
+	isBraintreeSettlementStatus,
+	mapBraintreeToCtResultCode,
+	mapCtPaymentAmountToBraintreeAmount,
+} from "./mappers/braintree.mapper";
 import { mapToBraintreeCreatePaymentRequest } from "./mappers";
 import { getCartIdFromContext, getPaymentInterfaceFromContext } from "../libs/fastify/context";
 import { BraintreeClient } from "../clients/braintree.client";
@@ -267,7 +271,11 @@ export class BraintreePaymentService extends AbstractPaymentService {
 			});
 		}
 
-		const txnReq: TransactionRequest = mapToBraintreeCreatePaymentRequest(ctCart, request.data.nonce);
+		const txnReq: TransactionRequest = mapToBraintreeCreatePaymentRequest(
+			ctCart,
+			request.data.nonce,
+			getConfig().braintreeMerchantAccountId,
+		);
 
 		let btResponse = await BraintreeClient.getInstance().createPayment(txnReq);
 
@@ -297,22 +305,38 @@ export class BraintreePaymentService extends AbstractPaymentService {
 		}
 
 		const txState: TransactionState = mapBraintreeToCtResultCode(btResponse.transaction.status, btResponse.success);
-		const updatedPayment = await this.ctPaymentService.updatePayment({
+		const transaction = {
+			amount: ctPayment.amountPlanned,
+			interactionId: btResponse.transaction.id,
+			state: txState,
+		};
+		let updatedPayment = await this.ctPaymentService.updatePayment({
 			id: ctPayment.id,
 			pspReference: btResponse.transaction.id,
 			transaction: {
 				type: "Authorization",
-				amount: ctPayment.amountPlanned,
-				interactionId: btResponse.transaction.id,
-				state: txState,
+				...transaction,
 			},
 		});
+
+		if (btResponse.success && isBraintreeSettlementStatus(btResponse.transaction.status)) {
+			updatedPayment = await this.ctPaymentService.updatePayment({
+				id: ctPayment.id,
+				pspReference: btResponse.transaction.id,
+				transaction: {
+					type: "Charge",
+					...transaction,
+					state: "Success",
+				},
+			});
+		}
 
 		logger.info(`Payment authorization processed.`, {
 			paymentId: updatedPayment.id,
 			interactionId: btResponse.transaction.id,
 			result: btResponse.success,
 			status: btResponse.transaction.status,
+			captured: isBraintreeSettlementStatus(btResponse.transaction.status),
 		});
 
 		return {

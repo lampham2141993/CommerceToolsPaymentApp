@@ -30,14 +30,29 @@ export const mapBraintreeToCtResultCode = function (resultCode: TransactionStatu
 	}
 };
 
-export const mapToBraintreeCreatePaymentRequest = (cart: Cart, nonce: string): TransactionRequest => {
+const settledStatuses = new Set([
+	"submitted_for_settlement",
+	"settling",
+	"settled",
+	"settlement_pending",
+	"settlement_confirmed",
+]);
+
+export const isBraintreeSettlementStatus = (status: string | undefined): boolean =>
+	!!status && settledStatuses.has(status);
+
+export const mapToBraintreeCreatePaymentRequest = (
+	cart: Cart,
+	nonce: string,
+	merchantAccountId?: string,
+): TransactionRequest => {
 	const billing = mapBillingAddress(cart.billingAddress);
 	const request: TransactionRequest = {
 		amount: mapCtPaymentAmountToBraintreeAmount(cart.totalPrice),
-		// merchantAccountId: getConfig().braintreeMerchantId,
+		...(merchantAccountId ? { merchantAccountId } : {}),
 		paymentMethodNonce: nonce,
 		options: {
-			submitForSettlement: false,
+			submitForSettlement: true,
 		},
 	};
 	if (billing) {

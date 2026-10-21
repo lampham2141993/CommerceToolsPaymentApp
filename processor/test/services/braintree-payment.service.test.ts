@@ -206,7 +206,13 @@ describe(BraintreePaymentService.name, () => {
 		const mockCart = mockGetCartResult();
 		const mockPayment = { ...mockGetPaymentResult, amountPlanned: mockCart.totalPrice };
 		const mockUpdatedPayment = { ...mockUpdatePaymentResult, amountPlanned: mockCart.totalPrice };
-		const mockBraintreeResponse = mockBrainTreeCreatePaymentResponse;
+		const mockBraintreeResponse = {
+			...mockBrainTreeCreatePaymentResponse,
+			transaction: {
+				...mockBrainTreeCreatePaymentResponse.transaction,
+				status: "submitted_for_settlement" as const,
+			},
+		};
 
 		jest.spyOn(paymentSDK.ctCartService, "getCart").mockResolvedValue(mockCart);
 		jest.spyOn(paymentSDK.ctCartService, "getPaymentAmount").mockResolvedValue(mockCart.totalPrice);
@@ -227,7 +233,7 @@ describe(BraintreePaymentService.name, () => {
 		expect(result).toMatchObject({
 			id: "dummy-braintree-transaction-id",
 			success: true,
-			status: "authorized",
+			status: "submitted_for_settlement",
 			amount: "1500.00",
 			paymentReference: mockUpdatedPayment.id,
 			additionalProcessorResponse: "Approved",
@@ -242,17 +248,27 @@ describe(BraintreePaymentService.name, () => {
 		});
 		const expectedCreatePaymentRequest = {
 			amount: "1500",
-			options: { submitForSettlement: false },
+			options: { submitForSettlement: true },
 			paymentMethodNonce: "dummy-nonce",
 		};
 
 		expect(BraintreeClient.prototype.createPayment).toHaveBeenCalledWith(expectedCreatePaymentRequest);
 
-		expect(paymentSDK.ctPaymentService.updatePayment).toHaveBeenCalledWith({
+		expect(paymentSDK.ctPaymentService.updatePayment).toHaveBeenNthCalledWith(1, {
 			id: mockPayment.id,
 			pspReference: "dummy-braintree-transaction-id",
 			transaction: {
 				type: "Authorization",
+				amount: mockPayment.amountPlanned,
+				interactionId: "dummy-braintree-transaction-id",
+				state: "Success",
+			},
+		});
+		expect(paymentSDK.ctPaymentService.updatePayment).toHaveBeenNthCalledWith(2, {
+			id: mockPayment.id,
+			pspReference: "dummy-braintree-transaction-id",
+			transaction: {
+				type: "Charge",
 				amount: mockPayment.amountPlanned,
 				interactionId: "dummy-braintree-transaction-id",
 				state: "Success",
