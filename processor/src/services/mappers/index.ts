@@ -1,3 +1,7 @@
-import { mapBraintreeToCtResultCode, mapToBraintreeCreatePaymentRequest } from "./braintree.mapper";
+import {
+	isBraintreeSettlementStatus,
+	mapBraintreeToCtResultCode,
+	mapToBraintreeCreatePaymentRequest,
+} from "./braintree.mapper";
 
-export { mapBraintreeToCtResultCode, mapToBraintreeCreatePaymentRequest };
+export { isBraintreeSettlementStatus, mapBraintreeToCtResultCode, mapToBraintreeCreatePaymentRequest };
